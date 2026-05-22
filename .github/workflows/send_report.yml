@@ -29,7 +29,7 @@ jobs:
       # 3. ติดตั้ง dependencies
       - name: Install dependencies
         run: |
-          pip install playwright requests pillow cloudinary
+          pip install -r requirements.txt
           playwright install chromium
           playwright install-deps chromium
 
