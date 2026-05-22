@@ -50,4 +50,4 @@ jobs:
           TARGET_URL_1:          ${{ secrets.TARGET_URL_1 }}
           TARGET_URL_2:          ${{ secrets.TARGET_URL_2 }}
           TARGET_URL_3:          ${{ secrets.TARGET_URL_3 }}
-        run: python screenshot_to_line.py
+        run: python screenshot_to_telegram.py
