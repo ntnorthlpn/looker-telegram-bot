@@ -275,7 +275,11 @@ def send_images_to_telegram(
 #  MAIN FLOW
 # ============================================================
 async def run():
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    from datetime import timezone, timedelta
+    TZ_BANGKOK = timezone(timedelta(hours=7))
+    timestamp = datetime.now(TZ_BANGKOK).strftime("%Y-%m-%d %H:%M:%S")
+     
     print("=" * 55)
     print(f"  📸 Screenshot → Telegram  |  {timestamp}")
     print("=" * 55)
