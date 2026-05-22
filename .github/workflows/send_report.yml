@@ -1,14 +1,18 @@
 name: Looker Screenshot to Telegram
 
 on:
-  # ตั้งเวลาอัตโนมัติ (UTC) — ปรับเวลาตามต้องการ
-  # เวลาไทย = UTC+7 ดังนั้น 8:00 ไทย = 01:00 UTC
   schedule:
-    - cron: "0 1 * * *"   # 08:00 เวลาไทย
+    - cron: "0 0 * * *"   # 07:00 เวลาไทย
+    - cron: "0 5 * * *"   # 12:00 เวลาไทย
     - cron: "0 9 * * *"   # 16:00 เวลาไทย
 
   # รันมือได้จาก GitHub Actions tab
   workflow_dispatch:
+    inputs:
+      chat_id:
+        description: "Telegram chat_id ที่จะส่งภาพหา (ถ้าว่างจะส่งหา TELEGRAM_CHAT_ID default)"
+        required: false
+        default: ""
 
 jobs:
   screenshot:
@@ -16,33 +20,34 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      # 1. ดึง code จาก repo
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. ติดตั้ง Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # 3. ติดตั้ง dependencies
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           playwright install chromium
           playwright install-deps chromium
 
-      # 4. รัน script — Secret Keys ส่งผ่าน env อัตโนมัติ
       - name: Run screenshot
         env:
           TELEGRAM_BOT_TOKEN:    ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID:      ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_CHAT_ID:      ${{ inputs.chat_id || secrets.TELEGRAM_CHAT_ID }}
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
           CLOUDINARY_API_KEY:    ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-     
           TARGET_URL_1:          ${{ secrets.TARGET_URL_1 }}
           TARGET_URL_2:          ${{ secrets.TARGET_URL_2 }}
           TARGET_URL_3:          ${{ secrets.TARGET_URL_3 }}
-        run: python screenshot_to_telegram.py
+        run: python screenshot_to_line.py
