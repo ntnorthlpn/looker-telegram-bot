@@ -305,10 +305,10 @@ async def run():
         # ส่ง 3 ภาพพร้อมกันใน message เดียว 
      
         caption = (
-            f"📊 <b>รายงานสถานะงานเหตุเสีย</b>\n"
-            f"📡 Broadband, โทรศัพท์ และ SP/PON/OLT DOWN\n"
-            f"🔧 ที่อยู่ระหว่างดำเนินการ\n"
-            f"🕐 {timestamp}"
+            f"<b>รายงานสถานะงานเหตุเสีย</b>\n"
+            f"Broadband, โทรศัพท์ และ SP/PON/OLT DOWN\n"
+            f"ที่อยู่ระหว่างดำเนินการ\n"
+            f"{timestamp}"
         )
         
         # รับ chat_id หลายคน คั่นด้วย comma
