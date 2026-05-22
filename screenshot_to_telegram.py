@@ -27,7 +27,11 @@ from playwright.async_api import async_playwright
 #  CONFIG — รับค่าจาก Environment Variables (GitHub Secrets)
 #  ไม่มีค่าจริงใน code เลย
 # ============================================================
-TARGET_URL = os.environ["TARGET_URL"]
+TARGET_URLS = [
+    os.environ["TARGET_URL_1"],
+    os.environ["TARGET_URL_2"],
+    os.environ["TARGET_URL_3"],
+]
 SCREENSHOT_PATH = "looker_report.png"
 
 # ============================================================
