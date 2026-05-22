@@ -302,10 +302,23 @@ async def run():
 
         check_cloudinary_usage()
 
-        # ส่ง 3 ภาพพร้อมกันใน message เดียว
-        caption = f"📊 <b>รายงานเหตุเสีย</b>\n🕐 {timestamp}"
-        send_images_to_telegram(image_urls, caption=caption)
-
+        # ส่ง 3 ภาพพร้อมกันใน message เดียว 
+     
+        caption = (
+            f"📊 <b>รายงานสถานะงานเหตุเสีย</b>\n"
+            f"📡 Broadband, โทรศัพท์ และ SP/PON/OLT DOWN\n"
+            f"🔧 ที่อยู่ระหว่างดำเนินการ\n"
+            f"🕐 {timestamp}"
+        )
+        
+        # รับ chat_id หลายคน คั่นด้วย comma
+        chat_ids_raw = os.environ.get("TELEGRAM_CHAT_ID", "")
+        chat_ids = [c.strip() for c in chat_ids_raw.split(",") if c.strip()]
+        
+        # ส่งให้ทุก user
+        for chat_id in chat_ids:
+            send_images_to_telegram(image_urls, chat_id=chat_id, caption=caption)
+            print(f"✅ ส่งให้ chat_id: {chat_id} สำเร็จ")
     except Exception as e:
         print(f"\n❌ เกิดข้อผิดพลาด: {e}")
         sys.exit(1)
