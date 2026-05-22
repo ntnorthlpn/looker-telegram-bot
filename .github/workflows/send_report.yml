@@ -41,5 +41,8 @@ jobs:
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
           CLOUDINARY_API_KEY:    ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-          TARGET_URL:            ${{ secrets.TARGET_URL }}
+     
+          TARGET_URL_1:          ${{ secrets.TARGET_URL_1 }}
+          TARGET_URL_2:          ${{ secrets.TARGET_URL_2 }}
+          TARGET_URL_3:          ${{ secrets.TARGET_URL_3 }}
         run: python screenshot_to_telegram.py
