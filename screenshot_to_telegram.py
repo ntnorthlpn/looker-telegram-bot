@@ -168,10 +168,12 @@ def resize_image(input_path: str, max_width: int = MAX_IMAGE_WIDTH, quality: int
 # ============================================================
 #  STEP 3 : Upload ไปยัง Cloudinary
 # ============================================================
-def upload_to_cloudinary(image_path: str) -> str:
+def upload_to_cloudinary(image_path: str, public_id: str = "looker_reports/report_latest_SectionB") -> str:
+    """
+    Upload ภาพไปยัง Cloudinary แล้วคืน public URL
+    """
     print(f"[3/4] ☁️  กำลัง upload ภาพไปยัง Cloudinary...")
 
-    public_id = "looker_reports/report_latest_SectionB"
     result = cloudinary.uploader.upload(
         image_path,
         public_id     = public_id,
@@ -182,6 +184,7 @@ def upload_to_cloudinary(image_path: str) -> str:
     url = result["secure_url"]
     print(f"[3/4] ✅ URL: {url}")
     return url
+     
 
 
 # ============================================================
@@ -230,7 +233,43 @@ def send_image_to_telegram(
     else:
         print(f"[4/4] ❌ ส่ง Telegram ไม่สำเร็จ: {response.status_code} {response.text}")
         return False
+# ============================================================
+#  STEP 4b : ส่ง 3 ภาพพร้อมกันใน message เดียว (media group)
+# ============================================================
+def send_images_to_telegram(
+    image_urls: list,
+    chat_id: str = TELEGRAM_CHAT_ID,
+    token: str   = TELEGRAM_BOT_TOKEN,
+    caption: str = "",
+) -> bool:
+    print(f"[4/4] 📨 กำลังส่ง {len(image_urls)} ภาพไปยัง Telegram...")
 
+    # สร้าง media group — ภาพแรกใส่ caption
+    media = []
+    for i, url in enumerate(image_urls):
+        item = {"type": "photo", "media": url}
+        if i == 0:
+            item["caption"]    = caption
+            item["parse_mode"] = "HTML"
+        media.append(item)
+
+    payload = {
+        "chat_id": chat_id,
+        "media":   media,
+    }
+
+    response = requests.post(
+        f"https://api.telegram.org/bot{token}/sendMediaGroup",
+        json=payload,
+        timeout=30,
+    )
+
+    if response.status_code == 200:
+        print(f"[4/4] ✅ ส่ง Telegram สำเร็จ!")
+        return True
+    else:
+        print(f"[4/4] ❌ ส่ง Telegram ไม่สำเร็จ: {response.status_code} {response.text}")
+        return False
 
 # ============================================================
 #  MAIN FLOW
@@ -241,26 +280,40 @@ async def run():
     print(f"  📸 Screenshot → Telegram  |  {timestamp}")
     print("=" * 55)
 
+    temp_files = []
+
     try:
-        png_path  = await take_screenshot(TARGET_URL, SCREENSHOT_PATH)
-        jpg_path  = resize_image(png_path)
-        image_url = upload_to_cloudinary(jpg_path)
+        image_urls = []
+
+        # ดึง 3 URL พร้อมกัน
+        for i, url in enumerate(TARGET_URLS, start=1):
+            png_path = f"looker_report_{i}.png"
+            temp_files.append(png_path)
+            temp_files.append(png_path.replace(".png", ".jpg"))
+
+            png_path  = await take_screenshot(url, png_path)
+            jpg_path  = resize_image(png_path)
+            image_url = upload_to_cloudinary(jpg_path, public_id=f"looker_reports/report_latest_{i}")
+            image_urls.append(image_url)
+
         check_cloudinary_usage()
 
-        caption = f"📊 <b>รายงานเหตุเสีย Section B</b>\n🕐 {timestamp}"
-        send_image_to_telegram(image_url, caption=caption)
+        # ส่ง 3 ภาพพร้อมกันใน message เดียว
+        caption = f"📊 <b>รายงานเหตุเสีย</b>\n🕐 {timestamp}"
+        send_images_to_telegram(image_urls, caption=caption)
 
     except Exception as e:
         print(f"\n❌ เกิดข้อผิดพลาด: {e}")
         sys.exit(1)
 
     finally:
-        for f in [SCREENSHOT_PATH, SCREENSHOT_PATH.replace(".png", ".jpg")]:
+        for f in temp_files:
             if os.path.exists(f):
                 os.remove(f)
                 print(f"🗑️  ลบไฟล์ชั่วคราว: {f}")
 
     print("\n✅ เสร็จสิ้น!")
+     
 
 
 # ============================================================
