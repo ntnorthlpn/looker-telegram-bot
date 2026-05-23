@@ -303,14 +303,14 @@ async def run():
         check_cloudinary_usage()
 
         # ส่ง 3 ภาพพร้อมกันใน message เดียว 
-     
+
         caption = (
             f"<b>รายงานสถานะงานเหตุเสีย</b>\n"
             f"Broadband, โทรศัพท์ และ SP/PON/OLT DOWN\n"
             f"ที่อยู่ระหว่างดำเนินการ\n"
-            f"{timestamp}"
-        )
-        
+            f"🕐 {timestamp}\n\n"
+            f"📎 <a href='https://datastudio.google.com/reporting/1483b6e3-3477-4906-8966-ec276423ec27/page/p_u1s42afhzd'>กดเพื่อดูรายละเอียดเพิ่มเติม</a>"
+        ) 
         # รับ chat_id หลายคน คั่นด้วย comma
         chat_ids_raw = os.environ.get("TELEGRAM_CHAT_ID", "")
         chat_ids = [c.strip() for c in chat_ids_raw.split(",") if c.strip()]
