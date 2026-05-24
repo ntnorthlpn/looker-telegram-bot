@@ -1,10 +1,7 @@
 name: Looker Screenshot to Telegram
 
 on:
-  schedule:
-    - cron: "15 0 * * *"   # 07:15 เวลาไทย
-    - cron: "15 5 * * *"   # 12:15 เวลาไทย
-    - cron: "15 9 * * *"   # 16:15 เวลาไทย 
+  schedule: 
 
   # รันมือได้จาก GitHub Actions tab
   workflow_dispatch:
