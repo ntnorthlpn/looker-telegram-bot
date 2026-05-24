@@ -42,6 +42,7 @@ jobs:
 
       - name: Run screenshot
         env:
+          TZ: Asia/Bangkok          # ✅ เพิ่มบรรทัดนี้
           TELEGRAM_BOT_TOKEN:    ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID:      ${{ inputs.chat_id || secrets.TELEGRAM_CHAT_ID }}
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
