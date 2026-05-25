@@ -1,7 +1,7 @@
 name: Looker Screenshot to Telegram
 
 on:
-  schedule: 
+ 
 
   # รันมือได้จาก GitHub Actions tab
   workflow_dispatch:
